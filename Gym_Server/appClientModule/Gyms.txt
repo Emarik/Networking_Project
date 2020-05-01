@@ -1,0 +1,8 @@
+#Gym Name
+#Connected users
+#Max Users
+#Gym Hours
+#Machine 1
+#9-10:3
+#
+#
