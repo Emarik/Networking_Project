@@ -1,0 +1,9 @@
+#Username - Password - ID - Emails
+Emarik - Something - 1 - emarikbe@gmail.com
+Emariks2 - Something - 2 - NewEmail
+Danny - 123 - 3 - d17chen@gmail.com
+Kevin - 123 - 4 - kevin@kevin.com
+Freddy - freddy - 5 - freddy@colon.com
+gordon - 123 - 6 - gordon@gordon.com
+nina - nina - 7 - nina@nina.com
+sam - sam - 8 - sam@sam.com
