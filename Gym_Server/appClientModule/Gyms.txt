@@ -1,8 +1,14 @@
 #Gym Name
+#ID
 #Connected users
 #Max Users
 #Gym Hours
 #Machine 1
-#9-10:3
-#
-#
+#Reserved
+MyGym
+id = 0
+users = 1
+MaxU = 15
+hours = 9 to 5
+Machine_1
+R = Dates | Time
