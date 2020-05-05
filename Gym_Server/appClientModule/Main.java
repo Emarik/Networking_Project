@@ -21,7 +21,7 @@ public class Main {
 				s = server_socket.accept();
 				DataInputStream dis = new DataInputStream(s.getInputStream()); 
                 DataOutputStream dos = new DataOutputStream(s.getOutputStream()); 
-                //boolean var = dis.readBoolean();
+                //boolean var = dis.readBoolean();*/
 				//DataInputStream dis = null;
                 //DataOutputStream dos = null;
                 Thread t = new Gym_Server(s,dis,dos);

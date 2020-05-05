@@ -51,17 +51,23 @@ public class Gym_Server extends Thread{
 				}
 			} else if(input.startsWith("Check_In")) {
 				if(!checked_in) {
+					if(Check_In()) {
 					checked_in = true;
-					//increase current gym by 1
 					dos.writeBoolean(true);
+					}else {
+						dos.writeBoolean(false);
+					}
 				} else {
 					dos.writeBoolean(false);
 				}
 			} else if(input.startsWith("Check_Out")) {
 				if(checked_in) {
+					if(Check_In()) {
 					checked_in = false;
-					//decrease current gym by 1
-					dos.writeBoolean(true);
+						dos.writeBoolean(true);
+					}else {
+						dos.writeBoolean(false);
+					}
 				} else {
 					dos.writeBoolean(false);
 				}
@@ -81,12 +87,21 @@ public class Gym_Server extends Thread{
 				//Not doing until later
 				Get_Information();
 			} else if(input.startsWith("Get_Gym_Info:")) {
-				//Parse for Gym Name
-				//Get the information for the current gym
-				Get_Gym_Information();
+				String Gym_Name = input.substring(14);
+				String ret = Get_Gym_Information(Gym_Name);
+				dos.writeUTF(ret);
 			} else if(input.startsWith("Get_Reserve_Time:")) {
-				//Find Machine Name, in current gym
-				Get_Gym_Information();
+				int first = input.indexOf('-');
+				String Machine_Name = input.substring(18,first-1);
+				String Date = input.substring(first+2);
+				String ret = Get_Reserve_Time(Machine_Name, Date);
+				dos.writeUTF(ret);
+			} else if(input.startsWith("Log out")) {
+				if(Log_Out()) {
+					dos.writeBoolean(true);
+				} else {
+					dos.writeBoolean(false);
+				}
 			}
 			return true;
 		} catch (IOException e) {
@@ -104,7 +119,9 @@ public class Gym_Server extends Thread{
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			//Reading_Input("Reserve: Machine_1 | Dates | Time");
+			//Get_Reserve_Time("Machine_1", "Dates");
+			//Get_Gym_Information("MyGym");
+			//Reading_Input("Get_Reserve_Time: Machine_1 - Dates");
 		}
 	}
 	
@@ -135,8 +152,12 @@ public class Gym_Server extends Thread{
 	}
 	
 	public boolean Log_Out() {
+		if(checked_in) {
+			Check_Out();
+		}
 		logged_in_id = 0;
 		connected_gym = 0;
+		
 		return true;
 	}
 	
@@ -146,7 +167,6 @@ public class Gym_Server extends Thread{
 			Scanner myReader = new Scanner(file);
 			int lastid=0;
 		
-			//
 			String st = "";
 			while(myReader.hasNextLine()) {
 				String line = myReader.nextLine();
@@ -193,11 +213,45 @@ public class Gym_Server extends Thread{
 		return "";
 	}
 	
-	public String Get_Gym_Information() {
-		//Open specific gym file
-		//Set server connected gym to that id, passed in as parameter
-		//return information
-		return "";
+	public String Get_Gym_Information(String Gym_Name) {
+		boolean inGym = false;
+		String st = "";
+		try {
+			File file = new File(gyms_filename);
+			Scanner myReader = new Scanner(file);
+			while(myReader.hasNextLine()) {
+				String line = myReader.nextLine();
+				if(line.charAt(0) == '#') {
+					//Do not read line, is comment
+				} else {
+					if(inGym) {
+						if(line.startsWith("G = ")) {
+							inGym = false;
+						} else if(line.startsWith("id = ")) {
+							//Nothing
+						} else if(line.startsWith("MaxU = ")) {
+							st = line.substring(7);
+						} else if(line.startsWith("users = ")) {
+							st = st+=" | " + line.substring(8);
+						} else if(line.startsWith("hours = ")) {
+							st = st+=" | " + line.substring(8);
+						} else if(line.startsWith("M = ")) {
+							st = st+=" | " + line.substring(4);
+						}
+					} else {
+						if(line.contains("G = "+Gym_Name)){
+							inGym = true;
+						}
+					}
+				}
+				
+			}
+			myReader.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			return "Server Failure";
+		}
+		return st;
 	}
 	
 	public boolean Reserve_Time(String Machine_Name, String Date, String Time) {
@@ -217,7 +271,7 @@ public class Gym_Server extends Thread{
 			    	}
 			    } else {
 			    	if(!inMachine) {
-			    		if(line.contains(Machine_Name)){
+			    		if(line.contains(" M = "+Machine_Name)){
 			    			inMachine = true;
 			    			newLines.add(line);
 			    		} else {
@@ -255,5 +309,131 @@ public class Gym_Server extends Thread{
 			return false;
 		}
 		return !alreadyContained;
+	}
+	public boolean Check_In() {
+		List<String> newLines = new ArrayList<>();
+		boolean inGym = false;
+		boolean found = false;
+		boolean success = false;
+		int max = 0;
+		try {
+			for (String line : Files.readAllLines(Paths.get(gyms_filename), StandardCharsets.UTF_8)) {
+			    if(!inGym) {
+			    	if(line.startsWith("id = "+connected_gym)) {
+			    		inGym = true;
+			    		newLines.add(line);
+			    	} else {
+			    		newLines.add(line);
+			    	}
+			    } else {
+			    	if(found) {
+			    		newLines.add(line);
+			    	} else {
+			    		if(line.startsWith("MaxU = ")){
+			    			max = Integer.parseInt(line.substring(7));
+			    		} else if(line.startsWith("users = ")) {
+			    			found = true;
+			    			int current = Integer.parseInt(line.substring(8));
+			    			if(current+1>max) {
+			    				newLines.add(line);
+			    			} else {
+			    				newLines.add("users = " + (current+1));
+			    				success = true;
+			    			}
+			    		}
+			    	}
+			    }
+			}
+			Files.write(Paths.get(gyms_filename), newLines, StandardCharsets.UTF_8);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return success;
+	}
+	public boolean Check_Out() {
+		List<String> newLines = new ArrayList<>();
+		boolean inGym = false;
+		boolean found = false;
+		boolean success = false;
+		try {
+			for (String line : Files.readAllLines(Paths.get(gyms_filename), StandardCharsets.UTF_8)) {
+			    if(!inGym) {
+			    	if(line.startsWith("id = "+connected_gym)) {
+			    		inGym = true;
+			    		newLines.add(line);
+			    	} else {
+			    		newLines.add(line);
+			    	}
+			    } else {
+			    	if(found) {
+			    		newLines.add(line);
+			    	} else {
+			    		if(line.startsWith("users = ")) {
+			    			found = true;
+			    			int current = Integer.parseInt(line.substring(8));
+			    			if(current-1<0) {
+			    				newLines.add(line);
+			    			} else {
+			    				newLines.add("users = " + (current-1));
+			    				success = true;
+			    			}
+			    		}
+			    	}
+			    }
+			}
+			Files.write(Paths.get(gyms_filename), newLines, StandardCharsets.UTF_8);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return success;
+	}
+	
+	public String Get_Reserve_Time(String Machine_Name, String Date) {
+		boolean inGym = false;
+		boolean inMachine = false;
+		String st = "";
+		try {
+			File file = new File(gyms_filename);
+			Scanner myReader = new Scanner(file);
+			while(myReader.hasNextLine()) {
+				String line = myReader.nextLine();
+				if(line.charAt(0) == '#') {
+					//Do not read line, is comment
+				} else {
+					if(inGym) {
+						if(line.startsWith("G = ")) {
+							inGym = false;
+							inMachine = false;
+							break;
+						} else if(inMachine) {
+							if(line.startsWith("R = ")) {
+								if(line.contains("R = "+Date)) {
+									if(st != "") {
+										st += " | ";
+									}
+									st += line.substring(Date.length()+7);
+								}
+							} else {
+								inMachine = false;
+							}
+						} if(line.contains("M = "+Machine_Name)) {
+							inMachine = true;
+						}
+					} else {
+						if(line.contains("id = "+connected_gym )){
+							inGym = true;
+						}
+					}
+				}
+				
+			}
+			myReader.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			return "Server Failure";
+		}
+		return st;
 	}
 }
