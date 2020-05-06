@@ -113,16 +113,16 @@ public class Gym_Server extends Thread{
 	
 	public void start() {
 		while(true) {
-			/*try {
+			try {
 				if(!Reading_Input(dis.readUTF())) {
 					break;
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
-			}*/
+			}
 			//Get_Reserve_Time("Machine_1", "Dates");
 			//System.out.println(Get_Gym_Information("MyGym"));
-			Reading_Input("Get_Gym_Info: Mattioli");
+			//Reading_Input("Get_Gym_Info: Mattioli");
 		}
 	}
 	
