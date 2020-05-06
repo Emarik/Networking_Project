@@ -5,7 +5,7 @@
 #Gym Hours
 #Machine 1
 #Reserved
-G = MyGym
+G = Mattioli
 id = 0
 MaxU = 15
 users = 1

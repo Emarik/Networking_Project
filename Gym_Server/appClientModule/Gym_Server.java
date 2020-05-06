@@ -89,7 +89,8 @@ public class Gym_Server extends Thread{
 			} else if(input.startsWith("Get_Gym_Info:")) {
 				String Gym_Name = input.substring(14);
 				String ret = Get_Gym_Information(Gym_Name);
-				dos.writeUTF(ret);
+				System.out.println(ret);
+				//dos.writeUTF(ret);
 			} else if(input.startsWith("Get_Reserve_Time:")) {
 				int first = input.indexOf('-');
 				String Machine_Name = input.substring(18,first-1);
@@ -112,16 +113,16 @@ public class Gym_Server extends Thread{
 	
 	public void start() {
 		while(true) {
-			try {
+			/*try {
 				if(!Reading_Input(dis.readUTF())) {
 					break;
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
-			}
+			}*/
 			//Get_Reserve_Time("Machine_1", "Dates");
-			//Get_Gym_Information("MyGym");
-			//Reading_Input("Get_Reserve_Time: Machine_1 - Dates");
+			//System.out.println(Get_Gym_Information("MyGym"));
+			Reading_Input("Get_Gym_Info: Mattioli");
 		}
 	}
 	
