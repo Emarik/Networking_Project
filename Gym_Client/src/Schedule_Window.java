@@ -9,6 +9,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
+import javax.swing.JToggleButton;
+
 import java.io.*;
 import java.awt.Choice;
 
@@ -18,7 +20,9 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.border.EtchedBorder;
+import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
+import javax.swing.ButtonModel;
 import javax.swing.DefaultComboBoxModel;
 import com.toedter.calendar.JDayChooser;
 import com.toedter.calendar.JDateChooser;
@@ -37,10 +41,8 @@ import java.text.SimpleDateFormat;
 import java.awt.event.ActionEvent;
 import java.util.*;
 
-//import com.toedter.calendar.JDateChooser;
 
 public class Schedule_Window extends JFrame implements ActionListener {
-	// public static Socket s;
 	JLabel label_Title;
 	JLabel label_Select_Equipment;
 	JLabel lblAvailability;
@@ -48,9 +50,6 @@ public class Schedule_Window extends JFrame implements ActionListener {
 	JTable table_Availability;
 
 	ButtonGroup group;
-	JRadioButton checkBox_Treadmill;
-	JRadioButton checkBox_FreeWeights;
-	JRadioButton checkBox_Unknown;
 
 	JDateChooser dateChooser;
 	JLabel lblSelectTime;
@@ -74,11 +73,8 @@ public class Schedule_Window extends JFrame implements ActionListener {
 			{ "3:00PM", "Open" }, { "4:00PM", "Open" }, { "5:00PM", "Open" } };
 
 	JTextArea txtS;
-	// DataInputStream dis = new DataInputStream(Login_Screen.s.getInputStream());
-	// DataOutputStream dos = new
-	// DataOutputStream(Login_Screen.s.getOutputStream());
 
-	public Schedule_Window()// throws IOException
+	public Schedule_Window()
 	{
 		DataInputStream dis;
 		DataOutputStream dos;
@@ -98,6 +94,7 @@ public class Schedule_Window extends JFrame implements ActionListener {
 		int Max_Users = 0;
 		int Active_Users = 0;
 		String Hours = "NAN";
+		List<String> machines = new ArrayList<String>();
 		if (str.equals("Server Failure")) {
 			// This is if it fails.
 		} else {
@@ -105,7 +102,6 @@ public class Schedule_Window extends JFrame implements ActionListener {
 			int second = str.indexOf("|", first + 1);
 			int start = str.indexOf("|", second + 1);
 			int end = str.indexOf("|", start + 1);
-			List<String> machines = new ArrayList<String>();
 			Max_Users = Integer.parseInt(str.substring(0, first - 1));
 			Active_Users = Integer.parseInt(str.substring(first + 2, second - 1));
 			Hours = str.substring(second + 2, start - 1);
@@ -136,29 +132,28 @@ public class Schedule_Window extends JFrame implements ActionListener {
 		label_Select_Equipment = new JLabel("Select Equipment:");
 		label_Select_Equipment.setBounds(28, 61, 113, 14);
 		getContentPane().add(label_Select_Equipment);
-
-		checkBox_Treadmill = new JRadioButton("Treadmill");
-		checkBox_Treadmill.setBounds(147, 57, 97, 23);
-		group.add(checkBox_Treadmill);
-		getContentPane().add(checkBox_Treadmill);
-
-		checkBox_FreeWeights = new JRadioButton("Free Weights");
-		checkBox_FreeWeights.setBounds(274, 57, 116, 23);
-		group.add(checkBox_FreeWeights);
-		getContentPane().add(checkBox_FreeWeights);
-
-		checkBox_Unknown = new JRadioButton("Other?");
-		checkBox_Unknown.setBounds(416, 57, 97, 23);
-		group.add(checkBox_Unknown);
-		getContentPane().add(checkBox_Unknown);
+		int last_width = 0;
+		for(int I = 0; I< machines.size();I++) {
+			JRadioButton new_machine = new JRadioButton(machines.get(I));
+			new_machine.setBounds(147+last_width,57,(int) new_machine.getPreferredSize().getWidth(),23);
+			new_machine.addActionListener(new ActionListener(){  
+		    public void actionPerformed(ActionEvent e){  
+	            Date_Changed(); 
+	    }  
+	    });  
+			group.add(new_machine);
+			getContentPane().add(new_machine);
+			last_width+= new_machine.getPreferredSize().getWidth();
+		}
+		
 
 		lblAvailability = new JLabel("Availability:");
 		lblAvailability.setBounds(274, 91, 97, 14);
 		getContentPane().add(lblAvailability);
 
 		table_Availability = new JTable(tabledata, columnNames);
-		// scrollPane.setViewportView(table_Availability);
 		table_Availability.setBounds(274, 107, 210, 179);
+		table_Availability.setEnabled(false);
 		getContentPane().add(table_Availability);
 
 		choice = new Choice();
@@ -191,6 +186,7 @@ public class Schedule_Window extends JFrame implements ActionListener {
 			}
 		});
 		getContentPane().add(dateChooser);
+		
 
 		lblMachineSelected_1 = new JLabel("MACHINE SELECTED");
 		lblMachineSelected_1.setFont(new Font("Tahoma", Font.BOLD, 12));
@@ -281,22 +277,14 @@ public class Schedule_Window extends JFrame implements ActionListener {
 
 		// Select Machine
 		String machine = null;
-		if (checkBox_Treadmill.isSelected()) {
-			machine = checkBox_Treadmill.getText().toString();
-			lblMachineSelected_1.setText("Treadmill");
-
-		} else if (checkBox_FreeWeights.isSelected()) {
-			machine = checkBox_FreeWeights.getText().toString();
-			lblMachineSelected_1.setText("Free Weights");
-
-		} else if (checkBox_Unknown.isSelected()) {
-			machine = checkBox_Unknown.getText().toString();
-			lblMachineSelected_1.setText("Other");
-
-		} else {
-			JOptionPane.showMessageDialog(null, "Please select a machine");
-
-		}
+		Enumeration<AbstractButton> en = group == null ? null : group.getElements();
+        while (en != null && en.hasMoreElements()) {
+            AbstractButton ab = en.nextElement();
+            if (ab.isSelected()) {
+            	machine = ab.getText();
+            }
+        }
+		lblMachineSelected_1.setText(machine);
 
 		// Select Time
 		String time = (String) choice.getSelectedItem();
@@ -402,20 +390,16 @@ public class Schedule_Window extends JFrame implements ActionListener {
 			try {
 				dis = new DataInputStream(Login_Screen.s.getInputStream());
 				dos = new DataOutputStream(Login_Screen.s.getOutputStream());
+
 				String machine = null;
-				if (checkBox_Treadmill.isSelected()) {
-					machine = checkBox_Treadmill.getText().toString();
-					lblMachineSelected_1.setText("Treadmill");
-
-				} else if (checkBox_FreeWeights.isSelected()) {
-					machine = checkBox_FreeWeights.getText().toString();
-					lblMachineSelected_1.setText("Free Weights");
-
-				} else if (checkBox_Unknown.isSelected()) {
-					machine = checkBox_Unknown.getText().toString();
-					lblMachineSelected_1.setText("Other");
-
-				}
+				Enumeration<AbstractButton> en = group == null ? null : group.getElements();
+	            while (en != null && en.hasMoreElements()) {
+	                AbstractButton ab = en.nextElement();
+	                if (ab.isSelected()) {
+	                	machine = ab.getText();
+	                }
+	            }
+				
 				if (machine != null) {
 					DateFormat Date_Selection = new SimpleDateFormat("MM-dd-yyyy");
 					lblNewLabel.setText(Date_Selection.format(dateChooser.getDate()));

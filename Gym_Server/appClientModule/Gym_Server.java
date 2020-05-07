@@ -120,9 +120,6 @@ public class Gym_Server extends Thread{
 				e.printStackTrace();
 				break;
 			}
-			//Get_Reserve_Time("Machine_1", "Dates");
-			//System.out.println(Get_Gym_Information("MyGym"));
-			//Reading_Input("Get_Gym_Info: Mattioli");
 		}
 	}
 	
@@ -133,6 +130,8 @@ public class Gym_Server extends Thread{
 		String st = "";
 		while(myReader.hasNextLine()) {
 			String line = myReader.nextLine();
+			if(line.length() == 0)
+				continue;
 			if(line.charAt(0) == '#') {
 				//Do not read line, is comment
 			} else {
@@ -171,6 +170,8 @@ public class Gym_Server extends Thread{
 			String st = "";
 			while(myReader.hasNextLine()) {
 				String line = myReader.nextLine();
+				if(line.length() == 0)
+					continue;
 				if(line.charAt(0) == '#') {
 					//Do not read line, is comment
 				} else {
@@ -222,6 +223,8 @@ public class Gym_Server extends Thread{
 			Scanner myReader = new Scanner(file);
 			while(myReader.hasNextLine()) {
 				String line = myReader.nextLine();
+				if(line.length() == 0)
+					continue;
 				if(line.charAt(0) == '#') {
 					//Do not read line, is comment
 				} else {
@@ -402,6 +405,8 @@ public class Gym_Server extends Thread{
 			Scanner myReader = new Scanner(file);
 			while(myReader.hasNextLine()) {
 				String line = myReader.nextLine();
+				if(line.length() == 0)
+					continue;
 				if(line.charAt(0) == '#') {
 					//Do not read line, is comment
 				} else {

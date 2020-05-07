@@ -27,9 +27,6 @@ import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import javax.swing.JTextArea;
 
-//import Calculator.Simple_Calculator;
-//import Scheduler.Schedule_Window;
-//import Gym_Home.Gym_Home;
 
 
 public class Login_Screen extends JFrame implements ActionListener{
@@ -144,8 +141,6 @@ public class Login_Screen extends JFrame implements ActionListener{
         dos.writeUTF("Login: "+name+ " - "+password);
         boolean success = dis.readBoolean();
         
-        // tell the gui to either go to login screen with user verification failed,
-        // or go to gym screen and welcome
         if(!success)
         {
         	JOptionPane.showMessageDialog(null, "Invalid username or password");
