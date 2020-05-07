@@ -62,7 +62,7 @@ public class Gym_Server extends Thread{
 				}
 			} else if(input.startsWith("Check_Out")) {
 				if(checked_in) {
-					if(Check_In()) {
+					if(Check_Out()) {
 					checked_in = false;
 						dos.writeBoolean(true);
 					}else {
@@ -89,10 +89,9 @@ public class Gym_Server extends Thread{
 			} else if(input.startsWith("Get_Gym_Info:")) {
 				String Gym_Name = input.substring(14);
 				String ret = Get_Gym_Information(Gym_Name);
-				System.out.println(ret);
-				//dos.writeUTF(ret);
+				dos.writeUTF(ret);
 			} else if(input.startsWith("Get_Reserve_Time:")) {
-				int first = input.indexOf('-');
+				int first = input.indexOf('|');
 				String Machine_Name = input.substring(18,first-1);
 				String Date = input.substring(first+2);
 				String ret = Get_Reserve_Time(Machine_Name, Date);
@@ -119,6 +118,7 @@ public class Gym_Server extends Thread{
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
+				break;
 			}
 			//Get_Reserve_Time("Machine_1", "Dates");
 			//System.out.println(Get_Gym_Information("MyGym"));
@@ -272,7 +272,7 @@ public class Gym_Server extends Thread{
 			    	}
 			    } else {
 			    	if(!inMachine) {
-			    		if(line.contains(" M = "+Machine_Name)){
+			    		if(line.contains("M = "+Machine_Name)){
 			    			inMachine = true;
 			    			newLines.add(line);
 			    		} else {
@@ -291,7 +291,6 @@ public class Gym_Server extends Thread{
 			    				} else {
 					    			newLines.add(line);
 			    				}
-			    				//Check if same as current reservation
 			    			} else {
 			    				found = true;
 				    			newLines.add("R = "+Date+" | "+Time);
@@ -332,6 +331,7 @@ public class Gym_Server extends Thread{
 			    	} else {
 			    		if(line.startsWith("MaxU = ")){
 			    			max = Integer.parseInt(line.substring(7));
+		    				newLines.add(line);
 			    		} else if(line.startsWith("users = ")) {
 			    			found = true;
 			    			int current = Integer.parseInt(line.substring(8));
@@ -379,6 +379,8 @@ public class Gym_Server extends Thread{
 			    				newLines.add("users = " + (current-1));
 			    				success = true;
 			    			}
+			    		} else {
+		    				newLines.add(line);
 			    		}
 			    	}
 			    }

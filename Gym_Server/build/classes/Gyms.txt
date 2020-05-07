@@ -7,12 +7,15 @@
 #Reserved
 G = Mattioli
 id = 0
-MaxU = 15
-users = 1
+MaxU = 10
+users = 2
 hours = 9 to 5
-M = Machine_1
-R = Dates | Time
-R = Dates | Times
-R = Dates | Time2
+M = Treadmill
+R = 05-14-2020 | 9:00AM - 10:00AM
+R = 05-07-2020 | 9:00AM - 10:00AM
+R = 05-07-2020 | 1:00PM - 2:00PM
+R = 05-06-2020 | 1:00PM - 2:00PM
+R = 05-06-2020 | 2:00PM - 3:00PM
+R = 05-15-2020 | 9:00AM - 10:00AM
 M = Machine_2
 #End of File
