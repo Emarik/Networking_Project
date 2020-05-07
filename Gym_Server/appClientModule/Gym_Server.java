@@ -82,10 +82,9 @@ public class Gym_Server extends Thread{
 				} else {
 					dos.writeBoolean(false);
 				}
-			} else if(input.startsWith("Get_Gyms_Info:")) {
-				//Get the information for all the gyms
-				//Not doing until later
-				Get_Information();
+			} else if(input.startsWith("Get_Gyms_Info")) {
+				String ret = Get_Information();
+				dos.writeUTF(ret);
 			} else if(input.startsWith("Get_Gym_Info:")) {
 				String Gym_Name = input.substring(14);
 				String ret = Get_Gym_Information(Gym_Name);
@@ -202,17 +201,32 @@ public class Gym_Server extends Thread{
 	}
 	
 	public String Get_Information() {
-		connected_gym = 0;
+		String st = "";
 		try {
-			File file = new File(login_filename);
+			File file = new File(gyms_filename);
 			Scanner myReader = new Scanner(file);
+			while(myReader.hasNextLine()) {
+				String line = myReader.nextLine();
+				if(line.length() == 0)
+					continue;
+				if(line.charAt(0) == '#') {
+					//Do not read line, is comment
+				} else {
+					if(line.startsWith("G = ")) {
+						if(!st.equals("")) {
+							st+=" | ";
+						}
+						st += line.substring(4);
+					}
+				}
+				
+			}
+			myReader.close();
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return "Server Failure";
 		}
-		//return list of gyms with info
-		return "";
+		return st;
 	}
 	
 	public String Get_Gym_Information(String Gym_Name) {
@@ -232,7 +246,7 @@ public class Gym_Server extends Thread{
 						if(line.startsWith("G = ")) {
 							inGym = false;
 						} else if(line.startsWith("id = ")) {
-							//Nothing
+							connected_gym = Integer.parseInt(line.substring(5));
 						} else if(line.startsWith("MaxU = ")) {
 							st = line.substring(7);
 						} else if(line.startsWith("users = ")) {

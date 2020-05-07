@@ -8,7 +8,7 @@
 G = Mattioli
 id = 0
 MaxU = 10
-users = 2
+users = 3
 hours = 9 to 5
 M = Treadmill
 R = 05-14-2020 | 9:00AM - 10:00AM
@@ -23,3 +23,8 @@ M = Free Weights2
 R = 05-08-2020 | 9:00AM - 10:00AM
 M = Free Weights3
 M = Free Weights4
+G = ESU
+id = 3
+MaxU = 10
+users = 1
+hours = 9 to 5

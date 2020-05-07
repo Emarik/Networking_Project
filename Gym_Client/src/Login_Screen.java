@@ -150,8 +150,8 @@ public class Login_Screen extends JFrame implements ActionListener{
         else
         {
         	JOptionPane.showMessageDialog(null, "You are successfully logged in");
-        	Schedule_Window window = new Schedule_Window();
-        	//chooseGym window = new chooseGym();
+        	//Schedule_Window window = new Schedule_Window("Mattioli");
+        	chooseGym window = new chooseGym();
 
         	window.setVisible(true);
         	this.setVisible(false);

@@ -74,7 +74,7 @@ public class Schedule_Window extends JFrame implements ActionListener {
 
 	JTextArea txtS;
 
-	public Schedule_Window()
+	public Schedule_Window(String gymName)
 	{
 		DataInputStream dis;
 		DataOutputStream dos;
@@ -82,8 +82,6 @@ public class Schedule_Window extends JFrame implements ActionListener {
 		try {
 			dis = new DataInputStream(Login_Screen.s.getInputStream());
 			dos = new DataOutputStream(Login_Screen.s.getOutputStream());
-			// Server call of get gym information; send gym name
-			String gymName = "Mattioli";
 			dos.writeUTF("Get_Gym_Info: " + gymName);
 			str = dis.readUTF();
 		} catch (IOException e) {
@@ -357,8 +355,6 @@ public class Schedule_Window extends JFrame implements ActionListener {
 
 		}
 
-		JOptionPane.showMessageDialog(this.getComponent(0), "Hello World");
-
 	}
 
 	public void processInfo3() throws UnknownHostException, IOException {
@@ -426,7 +422,6 @@ public class Schedule_Window extends JFrame implements ActionListener {
 							second = str.indexOf("|", first + 1);
 						}
 					}
-					System.out.println(times.size());
 					for (int row = 1; row < table_Availability.getRowCount(); row++) {
 						for (String time : times) {
 							if (time.startsWith((String) table_Availability.getValueAt(row, 0))) {

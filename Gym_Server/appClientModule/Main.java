@@ -18,11 +18,13 @@ public class Main {
 		while(true) {
 			Socket s = null;
 			try {
+				System.out.println("Looking");
 				s = server_socket.accept();
 				DataInputStream dis = new DataInputStream(s.getInputStream()); 
-                DataOutputStream dos = new DataOutputStream(s.getOutputStream()); 
+                DataOutputStream dos = new DataOutputStream(s.getOutputStream());
                 Thread t = new Gym_Server(s,dis,dos);
                 t.start();
+                System.out.println("after start");
 			}
 			catch (Exception e) {
 				//s.close();
