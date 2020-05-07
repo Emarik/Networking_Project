@@ -12,19 +12,17 @@ public class Main {
 	    jframe.setSize(400, 350);
 	    jframe.setVisible(true);
 	    jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	    //List<Thread> connections = new ArrayList<Thread>();
 
 		ServerSocket server_socket = new ServerSocket(8788);
 		
 		while(true) {
 			Socket s = null;
 			try {
-				System.out.println("Looking");
 				s = server_socket.accept();
 				DataInputStream dis = new DataInputStream(s.getInputStream()); 
                 DataOutputStream dos = new DataOutputStream(s.getOutputStream());
-                Thread t = new Gym_Server(s,dis,dos);
-                t.start();
-                System.out.println("after start");
+                new Thread(new Gym_Server(s, dis, dos)).start();
 			}
 			catch (Exception e) {
 				//s.close();

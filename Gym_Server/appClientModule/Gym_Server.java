@@ -5,7 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class Gym_Server extends Thread{
+public class Gym_Server implements Runnable{
 	final DataInputStream dis;
 	final DataOutputStream dos;
 	final Socket s;
@@ -106,19 +106,6 @@ public class Gym_Server extends Thread{
 		} catch (IOException e) {
 			e.printStackTrace();
 			return true;
-		}
-	}
-	
-	public void start() {
-		while(true) {
-			try {
-				if(!Reading_Input(dis.readUTF())) {
-					break;
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-				break;
-			}
 		}
 	}
 	
@@ -457,5 +444,20 @@ public class Gym_Server extends Thread{
 			return "Server Failure";
 		}
 		return st;
+	}
+
+	@Override
+	public void run() {
+		while(true) {
+			try {
+				if(!Reading_Input(dis.readUTF())) {
+					break;
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+				break;
+			}
+		}
+		
 	}
 }
